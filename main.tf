@@ -6,7 +6,7 @@ resource aws_s3_bucket "bucket" {
 
 resource aws_iam_role "iam_for_lambda" {
   name = "${var.app-name}-iam_for_lambda"
-  permissions_boundary = "arn:aws:iam::876284459943:policy/iamRolePermissionBoundary"
+  permissions_boundary = "arn:aws:iam::${var.account-id}:policy/iamRolePermissionBoundary"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
