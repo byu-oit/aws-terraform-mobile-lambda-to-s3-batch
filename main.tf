@@ -130,7 +130,8 @@ resource "aws_security_group" "vpc_sec" {
     from_port = 0
     protocol = "-1"
     to_port = 0
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [
+      "0.0.0.0/0"]
   }
 
   lifecycle {
@@ -148,11 +149,14 @@ resource aws_lambda_function "lambda" {
   runtime = var.runtime
   timeout = var.timeout
   vpc_config {
-    security_group_ids = ["${aws_security_group.vpc_sec.id}"]
+    security_group_ids = [
+      "${aws_security_group.vpc_sec.id}"]
     subnet_ids = var.subnets
   }
   environment {
-    variables = var.lambda-env-vars
+    variables = merge( {
+      S3_BUCKET_NAME = aws_s3_bucket.bucket.id
+    }, var.lambda-env-vars)
   }
 }
 
