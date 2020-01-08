@@ -152,10 +152,7 @@ resource aws_lambda_function "lambda" {
     subnet_ids = var.subnets
   }
   environment {
-    variables = {
-      S3_BUCKET_NAME = aws_s3_bucket.bucket.id
-      HANDEL_PARAMETER_STORE_PREFIX = var.app-name
-    }
+    variables = var.lambda-env-vars
   }
 }
 

@@ -45,3 +45,8 @@ variable "subnets" {
 variable "vpc-id" {
   type = string
 }
+
+variable "lambda-env-vars" {
+  type = map
+  default = {}
+}
