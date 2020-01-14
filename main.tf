@@ -91,6 +91,39 @@ resource aws_iam_policy "ssm-get-parameters-policy" {
 EOF
 }
 
+resource "aws_cloudwatch_log_group" "example" {
+  name              = "/aws/lambda/${aws_lambda_function.lambda.function_name}"
+  retention_in_days = 14
+}
+
+# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
+resource "aws_iam_policy" "lambda_logging" {
+  name = "lambda_logging"
+  description = "IAM policy for logging from a lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
+}
+
 resource "aws_iam_role_policy_attachment" "s3-policy-attachment" {
   role = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.s3-write-policy.arn
@@ -112,6 +145,7 @@ resource aws_lambda_permission "allow_cloudwatch" {
   function_name = aws_lambda_function.lambda.function_name
   principal = "events.amazonaws.com"
   source_arn = aws_cloudwatch_event_rule.batch_job.arn
+  depends_on    = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.logs"]
 }
 
 resource "aws_security_group" "vpc_sec" {
@@ -150,7 +184,7 @@ resource aws_lambda_function "lambda" {
   timeout = var.timeout
   vpc_config {
     security_group_ids = [
-      "${aws_security_group.vpc_sec.id}"]
+      aws_security_group.vpc_sec.id]
     subnet_ids = var.subnets
   }
   environment {
