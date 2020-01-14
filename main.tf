@@ -91,7 +91,7 @@ resource aws_iam_policy "ssm-get-parameters-policy" {
 EOF
 }
 
-resource "aws_cloudwatch_log_group" "example" {
+resource "aws_cloudwatch_log_group" "logs" {
   name              = "/aws/lambda/${aws_lambda_function.lambda.function_name}"
   retention_in_days = 14
 }
