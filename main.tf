@@ -96,7 +96,6 @@ resource "aws_cloudwatch_log_group" "logs" {
   retention_in_days = 14
 }
 
-# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 resource "aws_iam_policy" "lambda_logging" {
   name = "${var.app-name}-lambda-logging"
   description = "IAM policy for logging from a lambda"
@@ -145,7 +144,7 @@ resource aws_lambda_permission "allow_cloudwatch" {
   function_name = aws_lambda_function.lambda.function_name
   principal = "events.amazonaws.com"
   source_arn = aws_cloudwatch_event_rule.batch_job.arn
-  depends_on    = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.logs"]
+  depends_on    = [aws_iam_role_policy_attachment.lambda_logs, aws_cloudwatch_log_group.logs]
 }
 
 resource "aws_security_group" "vpc_sec" {
