@@ -70,7 +70,6 @@ resource aws_iam_policy "ec2-network-interface-policy" {
 EOF
 }
 
-//TODO: remove this policy once we get params out of ssm and into env.
 resource aws_iam_policy "ssm-get-parameters-policy" {
   name = "${var.app-name}-ssm"
   description = "A policy to allow getting parameters from the parameter store"

@@ -39,7 +39,7 @@ variable "timeout" {
 }
 
 variable "subnets" {
-  type = list
+  type = list(string)
 }
 
 variable "vpc-id" {
@@ -47,6 +47,6 @@ variable "vpc-id" {
 }
 
 variable "lambda-env-vars" {
-  type = map
+  type = map(string)
   default = {}
 }
