@@ -47,6 +47,15 @@ variable "vpc-id" {
 }
 
 variable "lambda-env-vars" {
-  type = map(string)
+  type    = map(string)
   default = {}
+}
+
+variable "s3_cors_rule" {
+  type = object({
+    allowed_methods = list(string)
+    allowed_origins = list(string)
+  })
+  description = "The CORS rule for the s3 bucket"
+  default     = null
 }
