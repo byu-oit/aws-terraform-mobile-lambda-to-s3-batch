@@ -2,6 +2,19 @@ resource aws_s3_bucket "bucket" {
   bucket = "${var.app-name}-${var.account-id}"
   acl    = "public-read"
 
+  lifecycle_rule {
+    id                                     = "AutoAbortFailedMultipartUpload"
+    enabled                                = true
+    abort_incomplete_multipart_upload_days = 10
+  }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
   dynamic "cors_rule" {
     for_each = var.s3_cors_rule != null ? [1] : []
     content {
