@@ -5,3 +5,7 @@ output "lambda-sec-group" {
 output "lambda" {
   value = aws_lambda_function.lambda
 }
+
+output "bucket" {
+  value = aws_s3_bucket.bucket
+}
