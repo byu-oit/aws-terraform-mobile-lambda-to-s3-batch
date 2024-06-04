@@ -1,6 +1,15 @@
+terraform {
+  required_version = ">= 0.12.16"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 3.0"
+    }
+  }
+}
+
 resource aws_s3_bucket "bucket" {
   bucket = "${var.app-name}-${var.account-id}"
-  acl    = "public-read"
 
   lifecycle_rule {
     id                                     = "AutoAbortFailedMultipartUpload"
@@ -22,6 +31,32 @@ resource aws_s3_bucket "bucket" {
       allowed_origins = var.s3_cors_rule.allowed_origins
     }
   }
+}
+
+data "aws_iam_policy_document" "bucket_policy" {
+  statement {
+    sid       = "1"
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.bucket.arn}/*"]
+
+    principals {
+      identifiers = ["*"]
+      type        = "AWS"
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "policy" {
+  bucket = aws_s3_bucket.bucket.id
+  policy = data.aws_iam_policy_document.bucket_policy.json
+}
+
+resource "aws_s3_bucket_public_access_block" "website_bucket_public_enabled" {
+  bucket                  = aws_s3_bucket.bucket.id
+  block_public_acls       = true
+  block_public_policy     = false
+  ignore_public_acls      = true
+  restrict_public_buckets = false
 }
 
 resource aws_iam_role "iam_for_lambda" {
